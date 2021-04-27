@@ -31,6 +31,8 @@ X = [ones(m, 1) X];
 %       
 
 
+predict = X*all_theta';
+[val,p] = max(predict, [], 2);
 
 
 

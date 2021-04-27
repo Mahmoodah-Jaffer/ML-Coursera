@@ -35,11 +35,21 @@ grad = zeros(size(theta));
 %           temp(1) = 0;   % because we don't add anything for j = 0  
 %           grad = grad + YOUR_CODE_HERE (using the temp variable)
 %
+theta_0 = norm(theta([2:end])); %need to exlude initial theta0
+theta_1 = [0;theta_0];
+reg = (lambda/(2*m))*(theta_1')*(theta_1);
 
+h = sigmoid(X*theta); 
 
+J_unreg =(sum((-y.*log(h))-((1-y).*log(1-(h)))))/m; %cost function
+grad_unreg = (1/m).*X'*(h-y); %gradient of cost function
 
+reg_grad = (lambda/m).*theta;
+reg_grad(1) = 0; % because we don't add anything for j = 0
 
+J = J_unreg + reg;
 
+grad = grad_unreg + reg_grad;
 
 
 
