@@ -62,31 +62,45 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
-%Part 1
+y = eye(num_labels)(y,:);
+
+
+%Part 1 - forward propagation
 a1 = [ones(m,1) X]; %Input Layer
 
 z2 = a1 *Theta1'; %Hidden Layer
-a2 = [ones(size(z2),1) sigmoid(z2)];
+a2 = sigmoid(z2);
+
+size_a2 = size(a2, 1);;
+a2 = [ones(size_a2,1) a2];
+
 
 z3 = a2*Theta2'; %Output Layer
 a3 = sigmoid(z3);
 
+%regularization factor
+reg = (lambda/(2*m))*(sum(sum((Theta1(:,2:end)).^2))+sum(sum((Theta2(:,2:end)).^2)));
 
-J = (sum((-y.*log(h))-((1-y).*log(1-(h)))))/m; %cost function
+J = ((1/m) * sum(sum((-y .* log(a3))-((1-y) .* log(1-a3))))) + reg; %regularized cost function
+
+%Part 2 - backpropagation
+
+sigma_3 = a3 - y;
+sigma_2 = (sigma_3*Theta2(:,2:end)).*sigmoidGradient(z2);
+
+%gradients
+grad_2 = (sigma_3'*a2);
+grad_1 = (sigma_2'*a1);
 
 
+reg_1 = (lambda/m)*Theta1;
+reg_2 = (lambda/m)*Theta2;
 
+Theta1_grad = (1/m)*grad_1 + reg_1;
+Theta2_grad = (1/m)*grad_2 + reg_2;
 
-
-
-
-
-
-
-
-
-
-
+Theta1_grad(:,1) -= ((lambda/m) * (Theta1(:,1)));
+Theta2_grad(:,1) -= ((lambda/m) * (Theta2(:,1)));
 
 
 % -------------------------------------------------------------
@@ -95,6 +109,8 @@ J = (sum((-y.*log(h))-((1-y).*log(1-(h)))))/m; %cost function
 
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
+
+
 
 
 end
